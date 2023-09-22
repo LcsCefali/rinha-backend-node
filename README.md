@@ -14,8 +14,7 @@ Cria a imagem do postgres
 docker run --name rinha-postgres -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres
 ```
 
-Coloque a env de conexão com o postgres
-Rode as migrations
+Coloque a env de conexão com o postgres e rode as migrations
 
 ```bash
 npx knex migrate:latest
