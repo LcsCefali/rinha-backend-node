@@ -5,6 +5,7 @@ import { logger } from './helpers/log';
 
 const app = fastify();
 
+app.get('/', () => 'Oii Rinha 🧡');
 app.post('/pessoas', peopleController.createPeople);
 app.get('/pessoas', peopleController.getPeopleByTerm);
 app.get('/pessoas/:id', peopleController.getPeopleById);

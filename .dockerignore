@@ -3,7 +3,8 @@
 #
 # For more help, visit the .dockerignore file reference guide at
 # https://docs.docker.com/engine/reference/builder/#dockerignore-file
-
+node_modules
+npm-debug.log
 **/.classpath
 **/.dockerignore
 **/.env
