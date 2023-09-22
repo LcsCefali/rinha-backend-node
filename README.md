@@ -1,18 +1,33 @@
-### 💪🏼
+#### 💪🏼
 
-Instalando as dependencias
+#### Instalando as dependencias
 
 ```bash
 yarn
 ```
 
-Rodando o projeto
+#### Banco de dados (Postgresql)
+
+Cria a imagem do postgres
+
+```bash
+docker run --name rinha-postgres -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres
+```
+
+Coloque a env de conexão com o postgres
+Rode as migrations
+
+```bash
+npx knex migrate:latest
+```
+
+#### Rodando o projeto
 
 ```bash
 yarn dev
 ```
 
-Para rodar com compose
+#### Para rodar com compose
 
 ```bash
 docker compose build --no-cache
