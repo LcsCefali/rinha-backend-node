@@ -26,10 +26,20 @@ npx knex migrate:latest
 yarn dev
 ```
 
-#### Para rodar com compose
+#### Docker
 
 ```bash
-docker compose build --no-cache
+docker network create -d bridge rinha-network
+```
+
+```bash
+npm run docker:build:api
+```
+
+ou
+
+```bash
+yarn docker:build:api
 ```
 
 ```bash

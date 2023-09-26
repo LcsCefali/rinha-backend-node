@@ -7,7 +7,7 @@
     "build": "tsup ./src --out-dir ./build",
     "dev": "tsx watch src/server.ts",
     "production": "node ./build/server.js",
-    "docker:build:api": "docker build --no-cache -t lcs-rinha-api -f ./docker/dev/Dockerfile ."
+    "docker:build:api": "docker build -f ./docker/dev/Dockerfile -t lcs-rinha-api ."
   },
   "keywords": [
     "rinha",

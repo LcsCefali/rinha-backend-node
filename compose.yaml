@@ -1,8 +1,13 @@
 version: '3.5'
 services:
+
   api1: &api
     image: lcs-rinha-api
     hostname: api1
+    ports:
+      - '81:3000'
+    environment:
+      - API_INSTANCE=api1
     env_file:
       - .env
     depends_on:
@@ -17,6 +22,11 @@ services:
 
   api2:
     <<: *api
+    hostname: api2
+    ports:
+      - '82:3000'
+    environment:
+      - API_INSTANCE=api2
 
   nginx: # Load Balancer
     image: nginx
@@ -37,6 +47,10 @@ services:
 
   db: # Banco de dados
     image: postgres
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+    ports:
+      - "5432:5432"
     deploy:
       resources:
         limits:
@@ -52,4 +66,7 @@ volumes:
 
 networks:
   rinha-network:
+    external: true
+  default:
+    driver: bridge
 
