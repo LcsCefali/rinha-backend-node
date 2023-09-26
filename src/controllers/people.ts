@@ -19,14 +19,18 @@ const createPeople = async (request: FastifyRequest, reply: FastifyReply) => {
   return reply.status(201).send({ message });
 }
 
-const getPeopleById = async (request: FastifyRequest) => {
+const getPeopleById = async (request: FastifyRequest, reply: FastifyReply) => {
   const validateParams = z.object({
     id: z.string().uuid(),
-  })
+  });
 
-  const { id } = validateParams.parse(request.params)
+  const { id } = validateParams.parse(request.params);
 
-  return peopleService.getPeopleById(id);
+  const response = await peopleService.getPeopleById(id);
+
+  if (!response) return reply.status(404).send('not found');
+
+  return response;
 }
 
 const getPeopleByTerm = async (request: FastifyRequest, reply: FastifyReply) => {
