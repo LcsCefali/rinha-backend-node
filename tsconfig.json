@@ -15,6 +15,7 @@
     "inlineSources": true,
     "skipLibCheck": true,
     "alwaysStrict": true,
+    "strict": true,
     "outDir": "./build",
     "baseUrl": ".",
     "paths": {

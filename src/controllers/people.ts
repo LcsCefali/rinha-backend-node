@@ -1,22 +1,27 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import peopleService from '../services/people';
 import { z } from 'zod';
+import { ICreatePeopleModel } from '~/interfaces/people';
 
 const createPeople = async (request: FastifyRequest, reply: FastifyReply) => {
+  const body = request.body as ICreatePeopleModel;
+
   const validateBody = z.object({
     apelido: z.string().max(32, 'max 32 char'),
     nome: z.string().max(100, 'max 100 char'),
-    nascimento: z.coerce.string(),
-    stack: z.string().max(32, 'max 32 char').array()
+    nascimento: z.string(),
+    stack: z.string().max(32, 'max 32 char').array().optional().nullable()
   });
 
-  const { apelido, nome, nascimento, stack } = validateBody.parse(request.body);
+  const { success } = validateBody.safeParse(body);
 
-  const [response, message] = await peopleService.createPeople({ apelido, nome, nascimento, stack });
+  if (!success) reply.status(400).send();
 
-  if (!response) return reply.status(422).send({ message: message.detail });
+  const userId = await peopleService.createPeople(body);
 
-  return reply.status(201).send({ message });
+  if (!userId) reply.status(422).send();
+
+  return reply.header('Location', `/pessoas/${userId}`).send();
 }
 
 const getPeopleById = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -28,7 +33,7 @@ const getPeopleById = async (request: FastifyRequest, reply: FastifyReply) => {
 
   const response = await peopleService.getPeopleById(id);
 
-  if (!response) return reply.status(404).send('not found');
+  if (!response) return reply.status(404).send();
 
   return response;
 }
@@ -37,16 +42,16 @@ const getPeopleByTerm = async (request: FastifyRequest, reply: FastifyReply) => 
   const query = request.query as { t: string };
   const term = query?.t ?? '';
 
-  if (!term) return reply.status(400).send({ message: 'send "t" query param for search'})
+  if (!term) return reply.status(400).send()
 
   return peopleService.getPeopleByTerm(term);
 }
 
 const countPeople = async () => {
-  const [response] = await peopleService.countPeople();
+  const response = await peopleService.countPeople();
 
   return {
-    count: Number(response.count ?? 0)
+    count: Number(response?.count ?? 0)
   };
 }
 

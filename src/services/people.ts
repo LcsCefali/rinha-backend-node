@@ -1,42 +1,48 @@
 import { randomUUID } from 'node:crypto';
 import { PeopleDatabase } from '../database';
 import { logger } from '../helpers/log';
+import { ICreatePeopleModel } from '~/interfaces/people';
 
-interface ICreatePeopleModel {
-  apelido: string;
-  nome: string;
-  nascimento: string;
-  stack: string[];
-}
+
 
 const peopleService = {
   async createPeople({ apelido, nome, nascimento, stack }: ICreatePeopleModel) {
     try {
-      const all = apelido.concat(nome, ...stack);
+      const all = apelido.concat(nome, stack?.toString());
       const id = randomUUID();
 
-      await PeopleDatabase().insert({ id, apelido, nome, nascimento, stack: stack.toString(), all });
-      return [true, 'inserted'];
+      await PeopleDatabase().insert({ id, apelido, nome, nascimento, stack: stack?.toString(), all });
+      return id;
     } catch (err) {
       logger.error('Failed to insert user', err);
-      return [false, err];
+      return false;
     }
   },
   
   async getPeopleById (id: string) {
-    return PeopleDatabase().where('id', id);
+    const people = await PeopleDatabase().where('id', id).first();
+
+    if (!people) return false;
+
+    return {
+      ...people,
+      stack: (people.stack ?? '')?.split(',')
+    }
   },
   
   async getPeopleByTerm (term?: string) {
-    if (!term) return PeopleDatabase().select('id', 'apelido', 'nome', 'nascimento', 'stack').limit(50);
-
-    return PeopleDatabase()
+    const peoples = await PeopleDatabase()
       .select('id', 'apelido', 'nome', 'nascimento', 'stack')
       .whereILike('all', `%${term}%`).limit(50);
+    
+    return peoples.map(people => ({
+      ...people,
+      stack: (people.stack ?? '')?.split(',')
+    }))
   },
   
   async countPeople () {
-    return PeopleDatabase().countDistinct('id');
+    return PeopleDatabase().countDistinct('id').first();
   }
 }
 
