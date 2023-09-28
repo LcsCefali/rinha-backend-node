@@ -20,8 +20,6 @@ COPY --from=base /src/build /rinha/build
 COPY --from=base /src/node_modules_prod /rinha/node_modules
 COPY package.json yarn.lock /rinha/
 
-EXPOSE 3000
+RUN yarn global add forever
 
-ENV PORT=3000
-
-CMD node /rinha/build/server.js
+CMD ["forever", "-f", "/rinha/build/server.js"]

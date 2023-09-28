@@ -1,66 +1,40 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import peopleService from '../services/people';
-import { z } from 'zod';
-import { ICreatePeopleModel } from '~/interfaces/people';
+import { FastifyRequestCreate, FastifyRequestGetById } from '~/interfaces/fastify';
+import { randomUUID } from 'node:crypto';
 
-const createPeople = async (request: FastifyRequest, reply: FastifyReply) => {
-  const body = request.body as ICreatePeopleModel;
+export class PeopleController {
+  async createPeople (request: FastifyRequestCreate, reply: FastifyReply) {
+    const id = randomUUID();
 
-  // const isvalidDate = isValid(new Date(body?.nascimento));
-  // if (!isvalidDate) return reply.status(400).send();
-
-  const validateBody = z.object({
-    apelido: z.string().max(32),
-    nome: z.string().max(100),
-    nascimento: z.coerce.date(),
-    stack: z.string().max(32).array().optional().nullable()
-  });
-
-  const { success } = validateBody.safeParse(body);
-
-  if (!success) return reply.status(400).send();
-
-  const userId = await peopleService.createPeople(body);
-
-  if (!userId) return reply.status(422).send();
-
-  return reply.header('Location', `/pessoas/${userId}`).status(201).send();
+    peopleService.createPeople({...request.body, id});
+  
+    return reply.header('Location', `/pessoas/${id}`).status(201).send();
+  }
+  
+  async getPeopleById (request: FastifyRequestGetById, reply: FastifyReply) {    
+    const response = await peopleService.getPeopleById(request.params.id);
+  
+    if (!response) return reply.status(404).send();
+  
+    return response;
+  }
+  
+  async getPeopleByTerm (request: FastifyRequest, reply: FastifyReply) {
+    const query = request.query as { t: string };
+    const term = query?.t ?? '';
+  
+    if (!term) return reply.status(400).send()
+  
+    return peopleService.getPeopleByTerm(term);
+  }
+  
+  async countPeople () {
+    const count = await peopleService.countPeople();
+  
+    return count ?? 0;
+  }
 }
 
-const getPeopleById = async (request: FastifyRequest, reply: FastifyReply) => {
-  const validateParams = z.object({
-    id: z.string().uuid(),
-  });
-
-  const { id } = validateParams.parse(request.params);
-
-  const response = await peopleService.getPeopleById(id);
-
-  if (!response) return reply.status(404).send();
-
-  return response;
-}
-
-const getPeopleByTerm = async (request: FastifyRequest, reply: FastifyReply) => {
-  const query = request.query as { t: string };
-  const term = query?.t ?? '';
-
-  if (!term) return reply.status(400).send()
-
-  return peopleService.getPeopleByTerm(term);
-}
-
-const countPeople = async () => {
-  const response = await peopleService.countPeople();
-
-  return Number(response?.count ?? 0);
-}
-
-const peopleController = {
-  createPeople,
-  getPeopleById,
-  getPeopleByTerm,
-  countPeople
-};
-
+const peopleController = new PeopleController();
 export default peopleController

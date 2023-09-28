@@ -1,14 +1,10 @@
 import 'dotenv/config'
-import { z } from 'zod'
 
-const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
-  DATABASE_CLIENT: z.enum(['sqlite', 'pg']).default('pg'),
-  DATABASE_URL: z.string(),
-  PORT: z.coerce.number().default(3000),
-  ADDRESS: z.string().default('0.0.0.0'),
-  API_INSTANCE: z.string().optional(),
-  CLUSTER_WORKERS: z.coerce.number().default(5)
-})
-
-export const env = envSchema.parse(process.env)
+export const NODE_ENV = process.env.NODE_ENV ?? 'production';
+export const DATABASE_CLIENT = process.env.DATABASE_CLIENT ?? 'pg';
+export const DATABASE_URL = process.env.DATABASE_URL ?? 'postgresql://postgres:mysecretpassword@localhost:5432/postgres';
+export const PORT = Number(process.env.PORT) ?? 3000;
+export const ADDRESS = process.env.ADDRESS ?? undefined;
+export const API_INSTANCE = process.env.API_INSTANCE ?? 'api1';
+export const CLUSTER_WORKERS = Number(process.env.CLUSTER_WORKERS ?? 5);
+export const LOG_LEVEL = process.env.LOG_LEVEL ?? 'info';

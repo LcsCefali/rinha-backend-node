@@ -1,7 +1,8 @@
-import * as winston from 'winston';
+import winston from 'winston';
+import { LOG_LEVEL } from '~/settings';
 
 export const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
+  level: LOG_LEVEL,
   transports: [
     new winston.transports.Console({
       handleExceptions: true

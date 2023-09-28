@@ -1,4 +1,5 @@
 export interface ICreatePeopleModel {
+  id: string;
   apelido: string;
   nome: string;
   nascimento: string;
@@ -11,5 +12,4 @@ export type People = {
   nome: string;
   nascimento: string;
   stack: string;
-  all: string;
 }
