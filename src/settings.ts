@@ -8,6 +8,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3000),
   ADDRESS: z.string().default('0.0.0.0'),
   API_INSTANCE: z.string().optional(),
+  CLUSTER_WORKERS: z.coerce.number().default(5)
 })
 
 export const env = envSchema.parse(process.env)

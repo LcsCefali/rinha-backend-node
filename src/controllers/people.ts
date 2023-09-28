@@ -6,22 +6,25 @@ import { ICreatePeopleModel } from '~/interfaces/people';
 const createPeople = async (request: FastifyRequest, reply: FastifyReply) => {
   const body = request.body as ICreatePeopleModel;
 
+  // const isvalidDate = isValid(new Date(body?.nascimento));
+  // if (!isvalidDate) return reply.status(400).send();
+
   const validateBody = z.object({
-    apelido: z.string().max(32, 'max 32 char'),
-    nome: z.string().max(100, 'max 100 char'),
-    nascimento: z.string(),
-    stack: z.string().max(32, 'max 32 char').array().optional().nullable()
+    apelido: z.string().max(32),
+    nome: z.string().max(100),
+    nascimento: z.coerce.date(),
+    stack: z.string().max(32).array().optional().nullable()
   });
 
   const { success } = validateBody.safeParse(body);
 
-  if (!success) reply.status(400).send();
+  if (!success) return reply.status(400).send();
 
   const userId = await peopleService.createPeople(body);
 
-  if (!userId) reply.status(422).send();
+  if (!userId) return reply.status(422).send();
 
-  return reply.header('Location', `/pessoas/${userId}`).send();
+  return reply.header('Location', `/pessoas/${userId}`).status(201).send();
 }
 
 const getPeopleById = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -50,9 +53,7 @@ const getPeopleByTerm = async (request: FastifyRequest, reply: FastifyReply) => 
 const countPeople = async () => {
   const response = await peopleService.countPeople();
 
-  return {
-    count: Number(response?.count ?? 0)
-  };
+  return Number(response?.count ?? 0);
 }
 
 const peopleController = {

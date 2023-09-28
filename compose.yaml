@@ -7,7 +7,9 @@ services:
     ports:
       - '81:3000'
     environment:
-      - API_INSTANCE=api1
+      API_INSTANCE: api1
+      CLUSTER: true
+      CLUSTER_WORKERS: 3
     env_file:
       - .env
     depends_on:
@@ -15,8 +17,13 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.25'
-          memory: '0.5GB'
+          cpus: '0.5'
+          memory: '0.6GB'
+    # ulimits:
+    #   nproc: 1000000
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
     networks:
       - rinha-network
 
@@ -26,7 +33,7 @@ services:
     ports:
       - '82:3000'
     environment:
-      - API_INSTANCE=api2
+      API_INSTANCE: api2
 
   nginx: # Load Balancer
     image: nginx
@@ -40,8 +47,13 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.25'
-          memory: '0.5GB'
+          cpus: '0.1'
+          memory: '0.3GB'
+    # ulimits:
+    #   nproc: 1000000
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
     networks:
       - rinha-network
 
@@ -54,7 +66,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.75'
+          cpus: '0.4'
           memory: '1.5GB'
     networks:
       - rinha-network

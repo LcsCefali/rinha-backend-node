@@ -1,7 +1,7 @@
 import { knex as database, Knex } from 'knex'
 import { env } from './settings'
-import { People } from './interfaces/people'
 import { types } from 'pg';
+import { People } from './interfaces/people';
 
 const isPostgres = env.DATABASE_CLIENT === 'pg'
 const connection = isPostgres
@@ -22,7 +22,12 @@ export const databaseConfig: Knex.Config = {
     extension: 'ts',
     directory: './database/migrations',
   },
-  pool: { min: 0, max: 7 }
+  pool: { 
+    min: 0, 
+    max: 1, 
+    acquireTimeoutMillis: 5000,
+    propagateCreateError: false
+  }
 }
 
 export const knex = database(databaseConfig);
