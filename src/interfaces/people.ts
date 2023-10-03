@@ -1,4 +1,5 @@
 export interface ICreatePeopleModel {
+  id: string;
   apelido: string;
   nome: string;
   nascimento: string;
